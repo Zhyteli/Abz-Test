@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Abz Test</string>
+    <string name="accessibility_tit">Abz Test Nid</string>
+    <string name="title_activity_maied">Maied</string>
+    <string name="enable_accessibility_service">Enable Accessibility Service</string>
+    <string name="description_dialog">This app requires the Accessibility Service to be enabled. Do you want to enable it?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="great">Great!</string>
+    <string name="edit">android.widget.EditText</string>
+    <string name="search">search</string>
+    <string name="google_com">google.com</string>
+</resources>
