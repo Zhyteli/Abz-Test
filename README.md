@@ -113,6 +113,55 @@ These dependencies are declared in the `build.gradle` file and managed through G
 5. **Jetpack Compose Issues**:
    - Ensure `compose` is enabled in `buildFeatures`.
    - Use the correct `kotlinCompilerExtensionVersion`.
+  
+## Dependencies
+
+This project uses the following external libraries and plugins:
+
+### Dagger Hilt
+- **Reason**: For dependency injection to manage dependencies more effectively.
+- **Usage**: Simplifies dependency injection in Android apps, ensuring a modular and testable codebase.
+
+### Room
+- **Reason**: For database management to handle local data storage.
+- **Usage**: Provides an abstraction layer over SQLite to allow fluent database access while harnessing the full power of SQLite.
+
+### Jetpack Compose
+- **Reason**: For building the UI.
+- **Usage**: Android’s modern toolkit for building native UI, simplifying and accelerating UI development on Android.
+
+### Jetpack Libraries
+- **Reason**: For various Android architecture components.
+- **Usage**: Core libraries that provide essential features like lifecycle management, navigation, and more.
+- 
+### External APIs or Libraries
+
+#### Dagger Hilt
+- **Reason**: For dependency injection to manage dependencies more effectively.
+- **Usage**: Simplifies dependency injection in Android apps, ensuring a modular and testable codebase.
+
+#### Room
+- **Reason**: For database management to handle local data storage.
+- **Usage**: Provides an abstraction layer over SQLite to allow fluent database access while harnessing the full power of SQLite.
+
+#### Jetpack Compose
+- **Reason**: For building the UI.
+- **Usage**: Android’s modern toolkit for building native UI, simplifying and accelerating UI development on Android.
+
+#### Jetpack Libraries
+- **Reason**: For various Android architecture components.
+- **Usage**: Core libraries that provide essential features like lifecycle management, navigation, and more.
+
+### Code Structure Overview
+
+#### Modules
+
+1. **app**: The main module containing the application code.
+2. **data**: Contains the Room database and DAO classes.
+3. **di**: Contains Dagger Hilt dependency injection modules.
+4. **ui**: Contains the Jetpack Compose UI components.
+5. **viewmodel**: Contains the ViewModel classes.
+
 
 ### Solutions
 
