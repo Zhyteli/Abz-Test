@@ -2,6 +2,7 @@ package com.abztest.presentation.servise
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
+import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
@@ -22,14 +23,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BrowserAccessibilityService : AccessibilityService() {
 
-    // Inject the InsertRequestUseCase dependency
     @Inject
     lateinit var insertRequestUseCase: InsertRequestUseCase
 
     private var lastRequest: String? = null // Stores the last request text
     private var lastTimestamp: Long = 0     // Stores the timestamp of the last request
-    private val scope =
-        CoroutineScope(SupervisorJob() + Dispatchers.IO) // Coroutine scope for background operations
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO) // Coroutine scope for background operations
 
     // Called when an accessibility event occurs
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -40,7 +39,7 @@ class BrowserAccessibilityService : AccessibilityService() {
 
     // Called when the accessibility service is interrupted
     override fun onInterrupt() {
-        // Handle interrupt
+        // Handle interrupt if necessary
     }
 
     // Called when the service is destroyed
@@ -52,34 +51,49 @@ class BrowserAccessibilityService : AccessibilityService() {
     // Called when the service is connected
     override fun onServiceConnected() {
         super.onServiceConnected()
-        Toast.makeText(this, getString(R.string.great), Toast.LENGTH_SHORT)
-            .show() // Show a toast message
+        Toast.makeText(this, getString(R.string.great), Toast.LENGTH_SHORT).show() // Show a toast message
     }
 
     // Traverse the node tree to find relevant nodes
     private fun traverseNodeTree(node: AccessibilityNodeInfo) {
         if (node.className == getString(R.string.edit) && node.viewIdResourceName != null) {
-            node.text?.toString()?.let { text ->
-                when {
-                    text.contains(getString(R.string.search)) -> parseUrl(text)?.takeIf {
-                        it.contains(
-                            getString(R.string.google_com)
-                        )
-                    }?.let { saveRequest(it) }
-
-                    text.contains("${getString(R.string.google_com)}/") -> saveRequest(
-                        extractDomain(
-                            text
-                        ), text
-                    )
-
-                    else -> {}
-                }
+            val text = node.text?.toString() ?: return // Get the text from the node or return if null
+            if (node.packageName == "com.android.chrome") {
+                handleChromeRequest(text) // Handle request specific to Chrome
+            } else {
+                handleOtherRequest(text) // Handle requests from other packages
             }
         }
         // Recursively traverse child nodes
         for (i in 0 until node.childCount) {
             node.getChild(i)?.let { traverseNodeTree(it) }
+        }
+    }
+
+    // Handle request logic specific to Chrome browser
+    private fun handleChromeRequest(text: String) {
+        when {
+            text.contains(getString(R.string.search)) -> {
+                parseUrl(text)?.takeIf { it.contains(getString(R.string.google_com)) }?.let { saveRequest(it) }
+            }
+            text.contains("${getString(R.string.google_com)}/") -> {
+                saveRequest(extractDomain(text), text)
+            }
+        }
+    }
+
+    // Handle request logic for other applications
+    private fun handleOtherRequest(text: String) {
+        when {
+            text.contains(getString(R.string.search)) -> {
+                parseUrl(text)?.takeIf { it.contains(getString(R.string.google_com)) }?.let { saveRequest(it) }
+            }
+            text.contains("${getString(R.string.google_com)}/") -> {
+                saveRequest(extractDomain(text), text)
+            }
+            text.isNotEmpty() -> {
+                saveRequest(text)
+            }
         }
     }
 
@@ -104,7 +118,7 @@ class BrowserAccessibilityService : AccessibilityService() {
         val timestamp = Calendar.getInstance().timeInMillis
 
         // Check if the request is the same as the last one or if the last request was too recent
-        if (lastRequest == query || (timestamp - lastTimestamp) < 1000) {
+        if (query.isBlank() || (lastRequest == query || (timestamp - lastTimestamp) < 1000)) {
             lastTimestamp = timestamp
             return
         }
@@ -120,4 +134,3 @@ class BrowserAccessibilityService : AccessibilityService() {
         }
     }
 }
-
