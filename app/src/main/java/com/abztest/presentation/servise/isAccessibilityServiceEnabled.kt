@@ -15,6 +15,11 @@ fun isAccessibilityServiceEnabled(context: Context, service: Class<out Accessibi
     // Retrieve the list of enabled accessibility services from the system settings
     val enabledServices = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
 
+    // Check if the enabledServices string is null or empty
+    if (enabledServices.isNullOrEmpty()) {
+        return false // No services are enabled
+    }
+
     // Create a splitter to split the enabled services string by colon (':')
     val colonSplitter = TextUtils.SimpleStringSplitter(':')
     colonSplitter.setString(enabledServices)
